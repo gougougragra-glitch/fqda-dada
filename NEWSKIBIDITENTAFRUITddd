@@ -1,4 +1,6 @@
 
+-- Chargement des scripts externes
+loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 
 local repo = "https://raw.githubusercontent.com/deividcomsono/Obsidian/main/"
 local Library = loadstring(game:HttpGet(repo .. "Library.lua"))()
@@ -17,25 +19,25 @@ local LocalPlayer = Players.LocalPlayer
 local targetNotifyConnections = {}
 
 local Window = Library:CreateWindow({
-   Title = "PHOENIX HUB",
-   Footer = "by reversee",
-   Icon = 120050296012939,
-   NotifySide = "Right",
-   ShowCustomCursor = true,
-	EnableCompacting = true,
-	SidebarCompacted = true,
-	CornerRadius = 15
+    Title = "PHOENIX HUB",
+    Footer = "by reversee",
+    Icon = 120050296012939,
+    NotifySide = "Right",
+    ShowCustomCursor = true,
+    EnableCompacting = true,
+    SidebarCompacted = true,
+    CornerRadius = 15
 })
 
 local Tabs = {
-   Defence = Window:AddTab("Defence", "shield"),
-   Target = Window:AddTab("Target", "target"),
-   Visuals = Window:AddTab("Visuals", "eye"),
-   Server = Window:AddTab("Server", "server"),
-   Miscs = Window:AddTab("Miscs", "palette"),
-   Fun = Window:AddTab("Fun", "smile"),
-   Credits = Window:AddTab("Credits", "users"),
-   UISettings = Window:AddTab("UI Settings", "settings"),
+    Defence = Window:AddTab("Defence", "shield"),
+    Target = Window:AddTab("Target", "target"),
+    Visuals = Window:AddTab("Visuals", "eye"),
+    Server = Window:AddTab("Server", "server"),
+    Miscs = Window:AddTab("Miscs", "palette"),
+    Fun = Window:AddTab("Fun", "smile"),
+    Credits = Window:AddTab("Credits", "users"),
+    UISettings = Window:AddTab("UI Settings", "settings"),
 }
 
 _G.ShurikenAntiKick = false
@@ -120,120 +122,119 @@ local telekinesisShieldActive = false
 local telekinesisShieldTask = nil
 
 local function updatePlayerList()
-   local currentPlayers = {}
-   for _, player in ipairs(Players:GetPlayers()) do
-       if player ~= LocalPlayer then
-           table.insert(currentPlayers, player.Name)
-       end
-   end
-   return currentPlayers
+    local currentPlayers = {}
+    for _, player in ipairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer then
+            table.insert(currentPlayers, player.Name)
+        end
+    end
+    return currentPlayers
 end
 
 local function deleteAllPaintParts()
-   for _, obj in ipairs(Workspace:GetDescendants()) do
-       if obj:IsA("BasePart") and obj.Name == "PaintPlayerPart" then
-           local clone = obj:Clone()
-           clone.Archivable = true
-           paintPartsBackup[obj:GetDebugId()] = { clone = clone, parent = obj.Parent }
-           obj:Destroy()
-       end
-   end
+    for _, obj in ipairs(Workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Name == "PaintPlayerPart" then
+            local clone = obj:Clone()
+            clone.Archivable = true
+            paintPartsBackup[obj:GetDebugId()] = { clone = clone, parent = obj.Parent }
+            obj:Destroy()
+        end
+    end
 end
 
 local function restorePaintParts()
-   for _, data in pairs(paintPartsBackup) do
-       if data.clone and data.parent then
-           data.clone.Parent = data.parent
-       end
-   end
-   paintPartsBackup = {}
+    for _, data in pairs(paintPartsBackup) do
+        if data.clone and data.parent then
+            data.clone.Parent = data.parent
+        end
+    end
+    paintPartsBackup = {}
 end
 
 local function watchNewPaintParts()
-   table.insert(connections, Workspace.DescendantAdded:Connect(function(obj)
-       if obj:IsA("BasePart") and obj.Name == "PaintPlayerPart" then
-           task.defer(function()
-               if obj and obj.Parent then
-                   local clone = obj:Clone()
-                   clone.Archivable = true
-                   paintPartsBackup[obj:GetDebugId()] = { clone = clone, parent = obj.Parent }
-                   obj:Destroy()
-               end
-           end)
-       end
-   end))
+    table.insert(connections, Workspace.DescendantAdded:Connect(function(obj)
+        if obj:IsA("BasePart") and obj.Name == "PaintPlayerPart" then
+            task.defer(function()
+                if obj and obj.Parent then
+                    local clone = obj:Clone()
+                    clone.Archivable = true
+                    paintPartsBackup[obj:GetDebugId()] = { clone = clone, parent = obj.Parent }
+                    obj:Destroy()
+                end
+            end)
+        end
+    end))
 end
 
 local function disconnectWatchers()
-   for _, conn in ipairs(connections) do
-       if conn.Connected then conn:Disconnect() end
-   end
-   connections = {}
+    for _, conn in ipairs(connections) do
+        if conn.Connected then conn:Disconnect() end
+    end
+    connections = {}
 end
 
 local function setTouchQuery(state)
-   local char = Workspace:FindFirstChild(LocalPlayer.Name)
-   if not char then return end
-   for _, v in ipairs(char:GetChildren()) do
-       if v:IsA("Part") or v:IsA("BasePart") then
-           v.CanTouch = state
-           v.CanQuery = state
-       end
-   end
+    local char = Workspace:FindFirstChild(LocalPlayer.Name)
+    if not char then return end
+    for _, v in ipairs(char:GetChildren()) do
+        if v:IsA("Part") or v:IsA("BasePart") then
+            v.CanTouch = state
+            v.CanQuery = state
+        end
+    end
 end
 
 local function FWC(obj, name)
-   return obj:WaitForChild(name)
+    return obj:WaitForChild(name)
 end
 
 local function Disc(name)
-   if AGConnections[name] then
-       AGConnections[name]:Disconnect()
-       AGConnections[name] = nil
-   end
+    if AGConnections[name] then
+        AGConnections[name]:Disconnect()
+        AGConnections[name] = nil
+    end
 end
 
 local function toy_spawn(name, cframe, vector)
-   local args = { name, cframe, vector }
-   ReplicatedStorage.MenuToys.SpawnToyRemoteFunction:InvokeServer(unpack(args))
-   local folder = Workspace:WaitForChild(LocalPlayer.Name .. "SpawnedInToys", 5)
-   if folder then
-       return folder:WaitForChild(name, 5)
-   end
-   return nil
+    local args = { name, cframe, vector }
+    ReplicatedStorage.MenuToys.SpawnToyRemoteFunction:InvokeServer(unpack(args))
+    local folder = Workspace:WaitForChild(LocalPlayer.Name .. "SpawnedInToys", 5)
+    if folder then
+        return folder:WaitForChild(name, 5)
+    end
+    return nil
 end
 
 local function grab(hitbox)
-   if hitbox and hitbox.Parent then
-       ReplicatedStorage.CharacterEvents.Grab:FireServer(hitbox)
-   end
+    if hitbox and hitbox.Parent then
+        ReplicatedStorage.CharacterEvents.Grab:FireServer(hitbox)
+    end
 end
 
 local function getClosestPlayer(pos)
-   if not pos then return nil end
-   local closestPlayer = nil
-   local minDistance = math.huge
-   
-   for _, player in pairs(game.Players:GetPlayers()) do
-       if player.Character then
-           local hrp = player.Character:FindFirstChild("HumanoidRootPart")
-           if hrp then
-               local distance = (hrp.Position - pos).Magnitude
-               if distance < minDistance then
-                   minDistance = distance
-                   closestPlayer = player
-               end
-           end
-       end
-   end
-   return closestPlayer
+    if not pos then return nil end
+    local closestPlayer = nil
+    local minDistance = math.huge
+    
+    for _, player in pairs(game.Players:GetPlayers()) do
+        if player.Character then
+            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local distance = (hrp.Position - pos).Magnitude
+                if distance < minDistance then
+                    minDistance = distance
+                    closestPlayer = player
+                end
+            end
+        end
+    end
+    return closestPlayer
 end
 
 -- PACKET LAG DETECTOR 
 local function GetSizeMB(StringLength)
-   return StringLength / (1024 * 1024)
+    return StringLength / (1024 * 1024)
 end
-
 local function StartPacketLagDetector()
    local RS = game:GetService("ReplicatedStorage")
    RS.GrabEvents.ExtendGrabLine.OnClientEvent:Connect(function(arg1, data)
